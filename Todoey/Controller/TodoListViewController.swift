@@ -7,31 +7,20 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController {
 
     var itemArray = [Item]()
-    
-    let defaults = UserDefaults.standard
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let newItem = Item()
-        newItem.title = "Find Mike"
-        itemArray.append(newItem)
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
-        let newItem2 = Item()
-        newItem2.title = "Buy Eggos"
-        itemArray.append(newItem2)
-        
-        let newItem3 = Item()
-        newItem3.title = "Destroy Demogorgon"
-        itemArray.append(newItem3)
-    
-        if let items = defaults.array(forKey: "ToDoListArray") as? [Item] {
-            itemArray = items
-        }
+        loadItem()
+ 
     }
     
     //MARK: - Tableview Data Source
@@ -71,13 +60,13 @@ class TodoListViewController: UITableViewController {
         let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
-            let newItem = Item()
+            let newItem = Item(context: self.context)
             newItem.title = textField.text!
+            newItem.done = false
             
             self.itemArray.append(newItem)
             
-            self.defaults.set(self.itemArray, forKey: "ToDoListArray")
-            self.tableView.reloadData()
+            self.saveItems()
         }
         
         alert.addTextField { (alertTextField) in
@@ -89,6 +78,27 @@ class TodoListViewController: UITableViewController {
         
         present(alert, animated: true, completion: nil)
         
+    }
+    
+    //MARK: - Model Manipulation Methods
+    
+    func saveItems() {
+        do {
+            try context.save()
+        } catch {
+            print("error saving context \(error)")
+        }
+        
+        self.tableView.reloadData()
+    }
+
+    func loadItem() {
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        do {
+            itemArray = try context.fetch(request)
+        } catch {
+            print("error fetch data : \(error)")
+        }
     }
 }
 
