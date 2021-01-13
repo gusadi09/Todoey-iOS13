@@ -85,7 +85,7 @@ class CategoryViewController: UITableViewController {
     
     //MARK: - TableView Delegate
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "goToItem", sender: self)
+        performSegue(withIdentifier: "goToItems", sender: self)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
