@@ -21,16 +21,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         print("\(String(describing: Realm.Configuration.defaultConfiguration.fileURL))")
    
-        let data = Data()
-        data.name = "agus"
-        data.age = 20
+      
         
         do {
             let realm = try Realm()
-            
-            try realm.write {
-                realm.add(data)
-            }
+           
         } catch {
             print("Error realm: \(error)")
         }
